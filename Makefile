@@ -19,9 +19,9 @@ ifeq ($(PROFILE),1)
   override LDFLAGS+=-pg
 endif
 
-ifeq ($(shell pkg-config --atleast-version=0.1.0 unibilium && echo 1),1)
-  override CFLAGS +=$(shell pkg-config --cflags unibilium) -DHAVE_UNIBILIUM
-  override LDFLAGS+=$(shell pkg-config --libs   unibilium)
+ifeq ($(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --atleast-version=0.1.0 unibilium && echo 1),1)
+  override CFLAGS +=$(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --cflags unibilium) -DHAVE_UNIBILIUM
+  override LDFLAGS+=$(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --libs   unibilium)
 else ifeq ($(shell pkg-config tinfo && echo 1),1)
   override CFLAGS +=$(shell pkg-config --cflags tinfo)
   override LDFLAGS+=$(shell pkg-config --libs   tinfo)
