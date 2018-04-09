@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.7)
 project(libtermkey)
 
 set(VERSION_MAJOR 0)
-set(VERSION_MINOR 18)
+set(VERSION_MINOR 20)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 find_package(Unibilium REQUIRED)
