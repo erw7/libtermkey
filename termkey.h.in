@@ -5,6 +5,10 @@ extern "C" {
 #ifndef GUARD_TERMKEY_H_
 #define GUARD_TERMKEY_H_
 
+#ifdef HAVE_UNIBILIUM
+# include <unibilium.h>
+#endif
+
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -166,6 +170,7 @@ void termkey_check_version(int major, int minor);
 
 TermKey *termkey_new(int fd, int flags);
 TermKey *termkey_new_abstract(const char *term, int flags);
+TermKey *termkey_new_abstract_from_unibi(unibi_term *unibi, int flags);
 void     termkey_free(TermKey *tk);
 void     termkey_destroy(TermKey *tk);
 

@@ -283,7 +283,11 @@ static int load_terminfo(TermKeyTI *ti)
   return 1;
 }
 
+#ifdef HAVE_UNIBILIUM
+static void *new_driver(TermKey *tk, const char *term, unibi_term *unibi)
+#else
 static void *new_driver(TermKey *tk, const char *term)
+#endif
 {
   TermKeyTI *ti = malloc(sizeof *ti);
   if(!ti)
@@ -293,7 +297,9 @@ static void *new_driver(TermKey *tk, const char *term)
   ti->root = NULL;
 
 #ifdef HAVE_UNIBILIUM
-  ti->unibi = unibi_from_term(term);
+  if (!term && !unibi)
+    goto abort_free;
+  ti->unibi = unibi ? unibi : unibi_from_term(term);
   if(!ti->unibi)
     goto abort_free;
 #else

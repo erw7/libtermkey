@@ -1,6 +1,9 @@
 #include "termkey.h"
 #include "termkey-internal.h"
 
+#ifdef HAVE_UNIBILIUM
+# include <unibilium.h>
+#endif
 #include <ctype.h>
 #include <errno.h>
 #ifndef _WIN32
@@ -318,7 +321,11 @@ static TermKey *termkey_alloc(void)
   return tk;
 }
 
+#ifdef HAVE_UNIBILIUM
+static int termkey_init(TermKey *tk, const char *term, unibi_term *unibi)
+#else
 static int termkey_init(TermKey *tk, const char *term)
+#endif
 {
   tk->buffer = malloc(tk->buffsize);
   if(!tk->buffer)
@@ -343,7 +350,11 @@ static int termkey_init(TermKey *tk, const char *term)
   struct TermKeyDriverNode *tail = NULL;
 
   for(i = 0; drivers[i]; i++) {
+#ifdef HAVE_UNIBILIUM
+    void *info = (*drivers[i]->new_driver)(tk, term, unibi);
+#else
     void *info = (*drivers[i]->new_driver)(tk, term);
+#endif
     if(!info)
       continue;
 
@@ -421,7 +432,11 @@ TermKey *termkey_new(int fd, int flags)
 
   const char *term = getenv("TERM");
 
+#ifdef HAVE_UNIBILIUM
+  if(!termkey_init(tk, term, NULL))
+#else
   if(!termkey_init(tk, term))
+#endif
     goto abort;
 
   if(!(flags & TERMKEY_FLAG_NOSTART) && !termkey_start(tk))
@@ -434,7 +449,11 @@ abort:
   return NULL;
 }
 
+#ifdef HAVE_UNIBILIUM
+TermKey *termkey_new_abstract_common(const char *term, unibi_term *unibi, int flags)
+#else
 TermKey *termkey_new_abstract(const char *term, int flags)
+#endif
 {
   TermKey *tk = termkey_alloc();
   if(!tk)
@@ -444,7 +463,11 @@ TermKey *termkey_new_abstract(const char *term, int flags)
 
   termkey_set_flags(tk, flags);
 
+#ifdef HAVE_UNIBILIUM
+  if(!termkey_init(tk, term, unibi)) {
+#else
   if(!termkey_init(tk, term)) {
+#endif
     free(tk);
     return NULL;
   }
@@ -458,6 +481,18 @@ abort:
   free(tk);
   return NULL;
 }
+
+#ifdef HAVE_UNIBILIUM
+TermKey *termkey_new_abstract_from_unibi(unibi_term *unibi, int flags)
+{
+  return termkey_new_abstract_common(NULL, unibi, flags);
+}
+
+TermKey *termkey_new_abstract(const char *term, int flags)
+{
+  return termkey_new_abstract_common(term, NULL, flags);
+}
+#endif
 
 void termkey_free(TermKey *tk)
 {

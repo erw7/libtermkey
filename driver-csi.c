@@ -1,6 +1,9 @@
 #include "termkey.h"
 #include "termkey-internal.h"
 
+#ifdef HAVE_UNIBILIUM
+# include <unibilium.h>
+#endif
 #include <stdio.h>
 #include <string.h>
 
@@ -499,7 +502,11 @@ static int register_keys(void)
   return 1;
 }
 
+#ifdef HAVE_UNIBILIUM
+static void *new_driver(TermKey *tk, const char *term, unibi_term *unibi)
+#else
 static void *new_driver(TermKey *tk, const char *term)
+#endif
 {
   if(!keyinfo_initialised)
     if(!register_keys())

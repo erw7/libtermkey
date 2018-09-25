@@ -3,6 +3,10 @@
 
 #include "termkey.h"
 
+#ifdef HAVE_UNIBILIUM
+# include <unibilium.h>
+#endif
+
 #include <stdint.h>
 #ifndef _WIN32
 # include <termios.h>
@@ -16,7 +20,11 @@ typedef SSIZE_T ssize_t;
 struct TermKeyDriver
 {
   const char      *name;
+#ifdef HAVE_UNIBILIUM
+  void          *(*new_driver)(TermKey *tk, const char *term, unibi_term *unibi);
+#else
   void          *(*new_driver)(TermKey *tk, const char *term);
+#endif
   void           (*free_driver)(void *info);
   int            (*start_driver)(TermKey *tk, void *info);
   int            (*stop_driver)(TermKey *tk, void *info);
