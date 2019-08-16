@@ -410,7 +410,10 @@ static void *new_driver(TermKey *tk, const char *term)
   ti->stop_string = NULL;
 
 #ifdef HAVE_UNIBILIUM
-  ti->unibi = unibi_from_term(term);
+  ti->unibi = unibi_get();
+  if (ti->unibi == NULL) {
+    ti->unibi = unibi_from_term(term);
+  }
   int saved_errno = errno;
   if(!ti->unibi && saved_errno != ENOENT) {
     free(ti);
