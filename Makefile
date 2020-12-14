@@ -112,7 +112,7 @@ install-inc: termkey.h
 	install -d $(DESTDIR)$(INCDIR)
 	install -m644 termkey.h $(DESTDIR)$(INCDIR)
 	install -d $(DESTDIR)$(LIBDIR)/pkgconfig
-	LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) VERSION=$(VERSION) sh termkey.pc.sh >$(DESTDIR)$(LIBDIR)/pkgconfig/termkey.pc
+	sed -e "s,@LIBDIR@,$(LIBDIR)," -e "s,@INCDIR@,$(INCDIR)," -e "s,@VERSION@,$(VERSION)," <termkey.pc.in > $(DESTDIR)$(LIBDIR)/pkgconfig/termkey.pc
 
 install-lib: $(LIBRARY)
 	install -d $(DESTDIR)$(LIBDIR)
@@ -150,8 +150,8 @@ clean-built:
 
 termkey.h: termkey.h.in Makefile
 	rm -f $@
-	sed -e 's/@@VERSION_MAJOR@@/$(VERSION_MAJOR)/g' \
-	    -e 's/@@VERSION_MINOR@@/$(VERSION_MINOR)/g' \
+	sed -e 's/@VERSION_MAJOR@/$(VERSION_MAJOR)/g' \
+	    -e 's/@VERSION_MINOR@/$(VERSION_MINOR)/g' \
 	    $< >$@
 	chmod a-w $@
 
